@@ -1,17 +1,16 @@
-# SmartThings MQTT Bridge
-***System to share and control SmartThings device states in MQTT.***
+# Hubitat Elevation MQTT Bridge
+***System to share and control Hubitat Elevation device states in MQTT.***
 
 Original Author:
-https://hub.docker.com/r/stjohnjohnson/smartthings-mqtt-bridge/
+https://hub.docker.com/r/stjohnjohnson/hubitat-mqtt-bridge/
 
-Updates:
+I highly recommend looking at the original github above as it may have more information
+that I have left out, or removed as it is not relevant.  For the time being I have left
+the links to the docker images and setup to the original as they do work.  As I rebuild
+and customize I will update this README.
 
-02/05/18 - Initial fork
+This project was spawned by the desire to [control hubitat and Hubitat Elevation from within Home Assistant][ha-issue].  Since Home Assistant already supports MQTT.  The original authors chose to go and build a bridge between hubitat and MQTT and I have borrowed their work.
 
-This project was spawned by the desire to [control SmartThings and Hubitat from within Home Assistant][ha-issue].  Since Home Assistant already supports MQTT, we chose to go and build a bridge between SmartThings and MQTT.
-
- - jeubanks / I just forked and modified to work with Hubitat.
- - I'll update and clean up and make this more of my own soon.
 
 # Architecture
 
@@ -24,22 +23,22 @@ Events about a device (power, level, switch) are sent to MQTT using the followin
 ```
 {PREFACE}/{DEVICE_NAME}/${ATTRIBUTE}
 ```
-__PREFACE is defined as "smartthings" by default in your configuration__
+__PREFACE is defined as "hubitat" by default in your configuration__
 
-For example, my Dimmer Z-Wave Lamp is called "Fireplace Lights" in SmartThings.  The following topics are published:
+For example, my Dimmer Z-Wave Switch is called "Family Room Lights" in Hubitat Elevation.  The following topics are published:
 
 ```
 # Brightness (0-99)
-smartthings/Fireplace Lights/level
+hubitat/Family Room Lights/level
 # Switch State (on|off)
-smartthings/Fireplace Lights/switch
+hubitat/Family Room Lights/switch
 ```
 
 The Bridge also subscribes to changes in these topics, so that you can update the device via MQTT.
 
 ```
-$ mqtt pub -t 'smartthings/Fireplace Lights/switch'  -m 'off'
-# Light goes off in SmartThings
+$ mqtt pub -t 'hubitat/Family Room Lights/switch'  -m 'off'
+# Light goes off in Hubitat Elevation
 ```
 
 # Configuration
@@ -55,16 +54,18 @@ mqtt:
     # host: mqtt:///m10.cloudmqtt.com:19427
 
     # Preface for the topics $PREFACE/$DEVICE_NAME/$PROPERTY
-    preface: smartthings
+    preface: hubitat
 
-    # The write and read suffixes need to be different to be able to differentiate when state comes from SmartThings or when its coming from the physical device/application
+    # The write and read suffixes need to be different to be able 
+    # to differentiate when state comes from Hubitat Elevation or 
+    # when its coming from the physical device/application
 
-    # Suffix for the topics that receive state from SmartThings $PREFACE/$DEVICE_NAME/$PROPERTY/$STATE_READ_SUFFIX
-    # Your physical device or application should subscribe to this topic to get updated status from SmartThings
+    # Suffix for the topics that receive state from Hubitat Elevation $PREFACE/$DEVICE_NAME/$PROPERTY/$STATE_READ_SUFFIX
+    # Your physical device or application should subscribe to this topic to get updated status from Hubitat Elevation
     # state_read_suffix: state
 
-    # Suffix for the topics to send state back to SmartThings $PREFACE/$DEVICE_NAME/$PROPERTY/$STATE_WRITE_SUFFIX
-    # your physical device or application should write to this topic to update the state of SmartThings devices that support setStatus
+    # Suffix for the topics to send state back to Hubitat Elevation $PREFACE/$DEVICE_NAME/$PROPERTY/$STATE_WRITE_SUFFIX
+    # your physical device or application should write to this topic to update the state of Hubitat Elevation devices that support setStatus
     # state_write_suffix: set_state
 
     # Suffix for the command topics $PREFACE/$DEVICE_NAME/$PROPERTY/$COMMAND_SUFFIX
@@ -149,12 +150,17 @@ $ pm2 restart smartthings-mqtt-bridge
     # Restart the service to get the latest changes
     ```
 
-2. Install the [Device Handler][dt] in the [Device Handler IDE][ide-dt] using "Create via code"
-3. Add the "MQTT Device" device in the [My Devices IDE][ide-mydev]. Enter MQTT Device (or whatever) for the name. Select "MQTT Bridge" for the type. The other values are up to you.
-4. Configure the "MQTT Device" in the [My Devices IDE][ide-mydev] with the IP Address, Port, and MAC Address of the machine running the Docker container
-4. Install the [Smart App][app] on the [Smart App IDE][ide-app] using "Create via code"
-5. Configure the Smart App (via the Native App) with the devices you want to share and the Device Handler you just installed as the bridge
-6. Via the Native App, select your MQTT device and watch as MQTT is populated with events from your devices
+2. Install the [Driver][dt] in the Hubitat Web Interface [Drivers Code] using "New Driver"
+
+3. Add the "MQTT Device" device in the [Devices]. Enter MQTT Device (or whatever) for the name. Select "MQTT Bridge" for the type. The other values are up to you.
+4. Configure the "MQTT Device" in the [Devices] with the IP Address, Port, and MAC Address of the machine running the Docker container
+4. Install the [App][app] in [Apps Code] using "New App"
+5. Enable the App in [Apps] using "Load New App" and select MQTT Bridge
+6. Click MQTT Bridge in the list of Apps
+7. At the top of notification (this is to be updated)
+8. Configure the devices you want to send to the MQTT Bridge.
+9. At the bottom select the MQTT Bridge to send events to.
+10. Save
 
 ## Advanced
 ### Docker Compose
@@ -190,17 +196,9 @@ homeassistant:
 
 This creates a directory called `./mqtt-bridge/` to store configuration for the bridge.  It also creates a directory `./home-assistant` to store configuration for HA.
 
-## Donate
 
-If you use and love our bridge tool, please consider buying us a coffee by sending some Satoshi to `1sBPcBai7gZco6LipPthuyZ5rH4RKx1Bg`.
 
-[![Donate Bitcoin](http://i.imgur.com/VJomBaC.png)](https://coinbase.com/stjohn)
-
- [dt]: https://github.com/stjohnjohnson/smartthings-mqtt-bridge/blob/master/devicetypes/stj/mqtt-bridge.src/mqtt-bridge.groovy
- [app]: https://github.com/stjohnjohnson/smartthings-mqtt-bridge/blob/master/smartapps/stj/mqtt-bridge.src/mqtt-bridge.groovy
- [ide-dt]: https://graph.api.smartthings.com/ide/devices
- [ide-mydev]: https://graph.api.smartthings.com/device/list
- [ide-app]: https://graph.api.smartthings.com/ide/apps
+ [dt]: https://github.com/jeubanks/hubitat-mqtt-bridge/blob/master/drivers/hubitat-mqtt-bridge-driver.groovy
+ [app]: https://github.com/jeubanks/hubitat-mqtt-bridge/blob/master/apps/hubitat-mqtt-bridge-app.groovy
  [ha-issue]: https://github.com/balloob/home-assistant/issues/604
  [docker-compose]: https://docs.docker.com/compose/
- [pm2]: http://pm2.keymetrics.io/

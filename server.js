@@ -25,13 +25,13 @@ var CONFIG_DIR = process.env.CONFIG_DIR || process.cwd(),
     ACCESS_LOG = path.join(CONFIG_DIR, 'access.log'),
     ERROR_LOG = path.join(CONFIG_DIR, 'error.log'),
     CURRENT_VERSION = require('./package').version,
-    // The topic type to get state changes from smartthings
+    // The topic type to get state changes from hubitat
     TOPIC_READ_STATE = 'state',
     SUFFIX_READ_STATE = 'state_read_suffix',
-    // The topic type to send commands to smartthings
+    // The topic type to send commands to hubitat
     TOPIC_COMMAND = 'command',
     SUFFIX_COMMAND = 'command_suffix',
-    // The topic type to send state changes to smartthings
+    // The topic type to send state changes to hubitat
     TOPIC_WRITE_STATE = 'set_state',
     SUFFIX_WRITE_STATE = 'state_write_suffix',
     RETAIN = 'retain';
@@ -111,9 +111,9 @@ function migrateState (version) {
         config.mqtt = {};
     }
 
-    // This is the previous default, but it's totally wrong
+    // Corrected for Hubitat with no slash (/)
     if (!config.mqtt.preface) {
-        config.mqtt.preface = '/smartthings';
+        config.mqtt.preface = 'hubitat';
     }
 
     // Default Suffixes
@@ -154,7 +154,7 @@ function migrateState (version) {
 }
 
 /**
- * Handle Device Change/Push event from SmartThings
+ * Handle Device Change/Push event from Hubitat
  *
  * @method handlePushEvent
  * @param  {Request} req
@@ -168,7 +168,7 @@ function handlePushEvent (req, res) {
     var topic = getTopicFor(req.body.name, req.body.type, TOPIC_READ_STATE),
         value = req.body.value;
 
-    winston.info('Incoming message from SmartThings: %s = %s', topic, value);
+    winston.info('Incoming message from Hubitat: %s = %s', topic, value);
     history[topic] = value;
 
     client.publish(topic, value, {
@@ -181,13 +181,13 @@ function handlePushEvent (req, res) {
 }
 
 /**
- * Handle Subscribe event from SmartThings
+ * Handle Subscribe event from Hubitat
  *
  * @method handleSubscribeEvent
  * @param  {Request} req
  * @param  {Object}  req.body
  * @param  {Object}  req.body.devices  List of properties => device names
- * @param  {String}  req.body.callback Host and port for SmartThings Hub
+ * @param  {String}  req.body.callback Host and port for Hubitat Hub
  * @param  {Result}  res               Result Object
  */
 function handleSubscribeEvent (req, res) {
@@ -275,14 +275,14 @@ function parseMQTTMessage (topic, message) {
     history[topic] = contents;
 
     // If sending level data and the switch is off, don't send anything
-    // SmartThings will turn the device on (which is confusing)
+    // Hubitat will turn the device on (which is confusing)
     if (property === 'level' && history[topicSwitchState] === 'off') {
         winston.info('Skipping level set due to device being off');
         return;
     }
 
     // If sending switch data and there is already a level value, send level instead
-    // SmartThings will turn the device on
+    // Hubitat will turn the device on
     if (property === 'switch' && contents === 'on' &&
         history[topicLevelCommand] !== undefined) {
         winston.info('Passing level instead of switch on');
@@ -300,8 +300,8 @@ function parseMQTTMessage (topic, message) {
         }
     }, function (error, resp) {
         if (error) {
-            // @TODO handle the response from SmartThings
-            winston.error('Error from SmartThings Hub: %s', error.toString());
+            // @TODO handle the response from Hubitat
+            winston.error('Error from Hubitat Hub: %s', error.toString());
             winston.error(JSON.stringify(error, null, 4));
             winston.error(JSON.stringify(resp, null, 4));
         }
@@ -313,7 +313,7 @@ async.series([
     function loadFromDisk (next) {
         var state;
 
-        winston.info('Starting SmartThings MQTT Bridge - v%s', CURRENT_VERSION);
+        winston.info('Starting Hubitat MQTT Bridge - v%s', CURRENT_VERSION);
         winston.info('Loading configuration');
         config = loadConfiguration();
 
@@ -366,7 +366,7 @@ async.series([
             ]
         }));
 
-        // Push event from SmartThings
+        // Push event from Hubitat
         app.post('/push',
             expressJoi({
                 body: {
@@ -379,7 +379,7 @@ async.series([
                 }
             }), handlePushEvent);
 
-        // Subscribe event from SmartThings
+        // Subscribe event from Hubitat
         app.post('/subscribe',
             expressJoi({
                 body: {

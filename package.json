@@ -1,10 +1,10 @@
 {
-  "name": "smartthings-mqtt-bridge",
+  "name": "hubitat-mqtt-bridge",
   "version": "2.0.0",
-  "description": "Bridge between SmartThings and an MQTT broker",
+  "description": "Bridge between Hubitat and an MQTT broker",
   "main": "server.js",
   "bin": {
-    "smartthings-mqtt-bridge": "./bin/smartthings-mqtt-bridge"
+    "hubitat-mqtt-bridge": "./bin/hubitat-mqtt-bridge"
   },
   "scripts": {
     "pretest": "npm run hint && npm run style",
@@ -15,19 +15,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/stjohnjohnson/smartthings-mqtt-bridge.git"
+    "url": "https://github.com/jeubanks/hubitat-mqtt-bridge.git"
   },
   "keywords": [
-    "smartthings",
+    "hubitat",
     "mqtt",
     "broker"
   ],
-  "author": "St. John Johnson <st.john.johnson@gmail.com>",
+  "author": "John Eubanks <john.eubanks@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/stjohnjohnson/smartthings-mqtt-bridge/issues"
+    "url": "https://github.com/jeubanks/hubitat-mqtt-bridge/issues"
   },
-  "homepage": "https://github.com/stjohnjohnson/smartthings-mqtt-bridge",
+  "homepage": "https://github.com/jeubanks/hubitat-mqtt-bridge",
   "dependencies": {
     "async": "^1.5.2",
     "body-parser": "^1.14.1",
