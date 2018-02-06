@@ -1,5 +1,5 @@
 FROM node:4
-MAINTAINER St. John Johnson <st.john.johnson@gmail.com> and Jeremiah Wuenschel <jeremiah.wuenschel@gmail.com>
+MAINTAINER St. John Johnson <st.john.johnson@gmail.com> and Jeremiah Wuenschel <jeremiah.wuenschel@gmail.com> and John Eubanks <john.eubanks@gmail.com>
 
 # Create our application direcory
 RUN mkdir -p /usr/src/app

@@ -413,8 +413,8 @@ import groovy.transform.Field
 
 definition(
     name: "MQTT Bridge",
-    namespace: "stj",
-    author: "St. John Johnson and Jeremiah Wuenschel",
+    namespace: "hubitat",
+    author: "St. John Johnson and Jeremiah Wuenschel and John Eubanks",
     description: "A bridge between Hubitat and MQTT",
     category: "My Apps",
     iconUrl: "https://s3.amazonaws.com/smartapp-icons/Connections/Cat-Connections.png",

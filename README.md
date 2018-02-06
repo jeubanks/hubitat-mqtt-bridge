@@ -91,7 +91,7 @@ There are two ways to use this, Docker (self-contained) or NPM (can run on Raspb
 
 Docker will automatically download the image, but you can "install" it or "update" it via `docker pull`:
 ```
-$ docker pull stjohnjohnson/smartthings-mqtt-bridge
+$ docker pull jeubanks/hubitat-mqtt-bridge
 ```
 
 To run it (using `/opt/mqtt-bridge` as your config directory and `8080` as the port):
@@ -101,46 +101,12 @@ $ docker run \
     --name="mqtt-bridge" \
     -v /opt/mqtt-bridge:/config \
     -p 8080:8080 \
-    stjohnjohnson/smartthings-mqtt-bridge
+    jeubanks/hubitat-mqtt-bridge
 ```
 
 To restart it:
 ```
 $ docker restart mqtt-bridge
-```
-
-## NPM
-
-To install the module, just use `npm`:
-```
-$ npm install -g smartthings-mqtt-bridge
-```
-
-If you want to run it, you can simply call the binary:
-```
-$ smartthings-mqtt-bridge
-Starting SmartThings MQTT Bridge - v1.1.3
-Loading configuration
-No previous configuration found, creating one
-```
-
-Although we recommend using a process manager like [PM2][pm2]:
-```
-$ pm2 start smartthings-mqtt-bridge
-[PM2] Starting smartthings-mqtt-bridge in fork_mode (1 instance)
-[PM2] Done.
-┌─────────────────────────┬────┬──────┬───────┬────────┬─────────┬────────┬────────────┬──────────┐
-│ App name                │ id │ mode │ pid   │ status │ restart │ uptime │ memory     │ watching │
-├─────────────────────────┼────┼──────┼───────┼────────┼─────────┼────────┼────────────┼──────────┤
-│ smartthings-mqtt-bridge │ 1  │ fork │ 20715 │ online │ 0       │ 0s     │ 7.523 MB   │ disabled │
-└─────────────────────────┴────┴──────┴───────┴────────┴─────────┴────────┴────────────┴──────────┘
-
-$ pm2 logs smartthings-mqtt-bridge
-smartthings-mqtt-bridge-1 (out): info: Starting SmartThings MQTT Bridge - v1.1.3
-smartthings-mqtt-bridge-1 (out): info: Loading configuration
-smartthings-mqtt-bridge-1 (out): info: No previous configuration found, creating one
-
-$ pm2 restart smartthings-mqtt-bridge
 ```
 
 ## Usage
@@ -175,7 +141,7 @@ mqtt:
         - 1883:1883
 
 mqttbridge:
-    image: stjohnjohnson/smartthings-mqtt-bridge
+    image: jeubanks/hubitat-mqtt-bridge
     volumes:
         - ./mqtt-bridge:/config
     ports:
