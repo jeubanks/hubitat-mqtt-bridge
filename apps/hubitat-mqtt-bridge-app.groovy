@@ -51,11 +51,12 @@ import groovy.transform.Field
             "presence"
         ]
     ],
-    "button": [
-        name: "Button",
-        capability: "capability.button",
+    "pushablebutton": [
+        name: "Pushable Button",
+        capability: "capability.pushableButton",
         attributes: [
-            "button"
+            "pushed",
+            "released"
         ]
     ],
     "carbonDioxideMeasurement": [
@@ -213,6 +214,13 @@ import groovy.transform.Field
         capability: "capability.relativeHumidityMeasurement",
         attributes: [
             "humidity"
+        ]
+    ],
+        "pressureSensors": [
+        name: "Pressure",
+        capability: "capability.relativeHumidityMeasurement",
+        attributes: [
+            "pressure"
         ]
     ],
     "relaySwitch": [
